@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zoomies!</title>
+<meta name="description" content="A colourful critter runner: dash, hop and slide through five wild worlds.">
+<meta name="theme-color" content="#3DB8FF">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23FF6F3C'/%3E%3Cg fill='%23fff'%3E%3Cellipse cx='32' cy='40' rx='11' ry='9'/%3E%3Ccircle cx='19' cy='28' r='5'/%3E%3Ccircle cx='27' cy='20' r='5'/%3E%3Ccircle cx='37' cy='20' r='5'/%3E%3Ccircle cx='45' cy='28' r='5'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Lilita+One&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<!-- ===== Icon sprite ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z" fill="currentColor"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4.5" height="14" rx="1.6" fill="currentColor"/><rect x="13.5" y="5" width="4.5" height="14" rx="1.6" fill="currentColor"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M17.8 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9.5l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 17.5V6.5l10-2v11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="6.8" cy="17.6" rx="2.8" ry="2.3" fill="currentColor"/><ellipse cx="16.8" cy="15.6" rx="2.8" ry="2.3" fill="currentColor"/></symbol>
+    <symbol id="i-music-off" viewBox="0 0 24 24"><path d="M9 17.5V6.5l10-2v11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="6.8" cy="17.6" rx="2.8" ry="2.3" fill="currentColor"/><ellipse cx="16.8" cy="15.6" rx="2.8" ry="2.3" fill="currentColor"/><path d="M3.5 3.5l17 17" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.9-8-11A4.6 4.6 0 0 1 12 6.6a4.6 4.6 0 0 1 8 2.9c0 6.1-8 11-8 11z" fill="currentColor"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FFC93C" stroke="#B86E00" stroke-width="2"/><circle cx="12" cy="12" r="5.6" fill="none" stroke="#FFE89A" stroke-width="1.6"/><g fill="#E39A12"><ellipse cx="12" cy="13.6" rx="2.3" ry="1.9"/><circle cx="9.6" cy="11.2" r="1"/><circle cx="11.1" cy="9.8" r="1"/><circle cx="12.9" cy="9.8" r="1"/><circle cx="14.4" cy="11.2" r="1"/></g></symbol>
+    <symbol id="i-gem" viewBox="0 0 24 24"><path d="M7.5 4.5h9l4 5-8.5 10.5L3.5 9.5z" fill="#A86BFF" stroke="#3D1A99" stroke-width="1.8" stroke-linejoin="round"/><path d="M3.5 9.5h17M9.5 4.5l-1.5 5 4 10.5 4-10.5-1.5-5" fill="none" stroke="#3D1A99" stroke-width="1.2" stroke-linejoin="round" opacity=".6"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z" fill="currentColor" stroke-linejoin="round"/></symbol>
+    <symbol id="i-star-o" viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 9v4.4l2.8 1.8M9.5 2.8h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M6.5 3.5h11M6.5 20.5h11M7.5 3.5c0 5 4.5 5.8 4.5 8.5s-4.5 3.5-4.5 8.5M16.5 3.5c0 5-4.5 5.8-4.5 8.5s4.5 3.5 4.5 8.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/><path d="M9.6 18.6c.6-1.8 2.4-2.6 2.4-2.6s1.8.8 2.4 2.6z" fill="currentColor"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5.5 21V3.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M6 4h12.5l-2.6 4 2.6 4H6z" fill="currentColor"/></symbol>
+    <symbol id="i-dodge" viewBox="0 0 24 24"><path d="M3.5 17c3-9 14-9 17 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="1 3.4"/><path d="M9 20.5l3-5 3 5z" fill="currentColor"/><path d="M17.6 13.6l3 3.4 1-4.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 17a8 8 0 1 1 16 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M12 17l4.5-5.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17" r="1.8" fill="currentColor"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.1-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M18.6 3.6v4.4h-4.4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-6.5 8 6.5M6.5 9.5v10h4v-5h3v5h4v-10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M5 12h12M12.5 6.5L18 12l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="currentColor"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" fill="none" stroke="currentColor" stroke-width="2.2"/></symbol>
+    <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="currentColor"/><path d="M8 10.5V8a4 4 0 0 1 7.7-1.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0z" fill="currentColor"/><path d="M7 6H4.5a3 3 0 0 0 3 4M17 6h2.5a3 3 0 0 1-3 4M12 14v3.5M8.5 20h7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-dice" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="2.2"/><g fill="currentColor"><circle cx="8.6" cy="8.6" r="1.5"/><circle cx="15.4" cy="15.4" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="15.4" cy="8.6" r="1.5"/><circle cx="8.6" cy="15.4" r="1.5"/></g></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 14l6-6 6 6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 10l6 6 6-6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-motion" viewBox="0 0 24 24"><path d="M3 9c3-3 5 3 8 0s5 3 8 0M3 15c3-3 5 3 8 0s5 3 8 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.5-3 7.6-7 9.5-4-1.9-7-5-7-9.5V6z" fill="#3D8BFF" stroke="#123C99" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-magnet" viewBox="0 0 24 24"><path d="M6.5 13V9a5.5 5.5 0 0 1 11 0v4" fill="none" stroke="#FF4D6D" stroke-width="4"/><rect x="4.5" y="13" width="4" height="5" rx="1" fill="#EEF1FA" stroke="#7A0F2B" stroke-width="1.2"/><rect x="15.5" y="13" width="4" height="5" rx="1" fill="#EEF1FA" stroke="#7A0F2B" stroke-width="1.2"/></symbol>
+    <symbol id="i-feather" viewBox="0 0 24 24"><path d="M19 4c-8 1-12 6-13 14l2 1c1-3 3-6 7-8-3 3-4.5 5-5.5 7.5 6-1 9-6 9.5-14.5z" fill="#FFFFFF" stroke="#6B45C8" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.5 2.5L5 13.5h5.5l-1.5 8 8.5-11h-5.5z" fill="#FFC93C" stroke="#A34B00" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<div id="app" class="app" data-state="loading">
+  <canvas id="game" class="game-canvas" aria-label="Zoomies game area"></canvas>
+
+  <!-- ===== HUD ===== -->
+  <header id="hud" class="hud" hidden>
+    <div class="hud-left">
+      <button id="btn-pause" class="icon-btn hud-btn" type="button" aria-label="Pause (Esc)" title="Pause (Esc or P)"><svg aria-hidden="true"><use href="#i-pause"/></svg></button>
+      <div class="chip hearts" id="hud-hearts" role="img" aria-label="Hearts: 3 of 3"></div>
+      <div class="chip stage-chip" id="hud-stage">
+        <div class="stage-line"><span class="stage-num" id="hud-stage-num">1</span><span class="stage-name" id="hud-stage-name">Sunny Meadow</span><span class="stage-pct" id="hud-pct">0%</span></div>
+        <div class="progress" id="hud-progress" role="progressbar" aria-label="Stage progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-fill" id="hud-fill"></div>
+          <canvas class="progress-marker" id="hud-marker" width="56" height="56" aria-hidden="true"></canvas>
+          <svg class="progress-flag" aria-hidden="true"><use href="#i-flag"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="hud-center">
+      <div class="chip score-chip">
+        <span class="stat-label">Score</span>
+        <span class="big-num" id="hud-score">0</span>
+        <span class="sub" id="hud-best"><svg aria-hidden="true"><use href="#i-trophy"/></svg><span id="hud-best-val">Best 0</span></span>
+      </div>
+      <div class="chip time-chip">
+        <span class="stat-label">Run time</span>
+        <span class="big-num" id="hud-time">0:00.0</span>
+        <span class="sub opt-sm"><svg aria-hidden="true"><use href="#i-hourglass"/></svg><span id="hud-total">Session 0:00</span></span>
+      </div>
+    </div>
+    <div class="hud-right">
+      <div class="chip stat" title="Coins collected"><svg aria-hidden="true"><use href="#i-coin"/></svg><span class="stat-val" id="hud-coins">0</span><span class="sr-only">coins</span></div>
+      <div class="chip stat" title="Obstacles avoided"><svg aria-hidden="true"><use href="#i-dodge"/></svg><span class="stat-val" id="hud-avoid">0</span><span class="stat-unit">dodged</span></div>
+      <div class="chip stat opt" title="Current speed"><svg aria-hidden="true"><use href="#i-gauge"/></svg><span class="stat-val" id="hud-speed">0</span><span class="stat-unit">km/h</span></div>
+      <button id="btn-sound-hud" class="icon-btn hud-btn" type="button" aria-label="Sound effects on" aria-pressed="true" title="Sound (M)"><svg aria-hidden="true"><use href="#i-sound"/></svg></button>
+    </div>
+    <div class="hud-powers" id="hud-powers" aria-live="polite"></div>
+  </header>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <!-- ===== Touch controls ===== -->
+  <div id="touch" class="touch" hidden>
+    <button class="touch-btn slide" id="touch-slide" type="button" aria-label="Slide"><svg aria-hidden="true"><use href="#i-down"/></svg><span>Slide</span></button>
+    <button class="touch-btn jump" id="touch-jump" type="button" aria-label="Jump"><svg aria-hidden="true"><use href="#i-up"/></svg><span>Jump</span></button>
+  </div>
+
+  <div id="countdown" class="countdown" aria-live="assertive"></div>
+
+  <!-- ===== Loading ===== -->
+  <section id="scr-loading" class="screen loading is-visible" aria-label="Loading">
+    <div class="loader">
+      <div class="loader-paws" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p>Warming up the critters…</p>
+    </div>
+  </section>
+
+  <!-- ===== Main menu ===== -->
+  <section id="scr-menu" class="screen menu" aria-labelledby="logo">
+    <div class="menu-brand">
+      <h1 class="logo" id="logo" aria-label="Zoomies!"><span aria-hidden="true">Z</span><span aria-hidden="true">o</span><span aria-hidden="true">o</span><span aria-hidden="true">m</span><span aria-hidden="true">i</span><span aria-hidden="true">e</span><span aria-hidden="true">s</span><span aria-hidden="true">!</span></h1>
+      <p class="tagline">Five wild worlds. One very speedy critter.</p>
+    </div>
+
+    <div class="menu-panel panel">
+      <div class="panel-head">
+        <p class="greet" id="menu-greet">Pick a critter, then hit play.</p>
+        <div class="corner-controls">
+          <button class="icon-btn sm" type="button" data-toggle="sfx" aria-label="Sound effects on" aria-pressed="true" title="Sound effects (M)"><svg aria-hidden="true"><use href="#i-sound"/></svg></button>
+          <button class="icon-btn sm" type="button" data-toggle="music" aria-label="Music on" aria-pressed="true" title="Music"><svg aria-hidden="true"><use href="#i-music"/></svg></button>
+          <button class="icon-btn sm" type="button" data-toggle="fullscreen" aria-label="Full screen" title="Full screen"><svg aria-hidden="true"><use href="#i-expand"/></svg></button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="inp-name" class="label">Your name</label>
+        <div class="name-row">
+          <input id="inp-name" type="text" maxlength="14" autocomplete="nickname" spellcheck="false" placeholder="Type a name">
+          <button id="btn-dice" class="icon-btn" type="button" aria-label="Pick a random name" title="Random name"><svg aria-hidden="true"><use href="#i-dice"/></svg></button>
+        </div>
+      </div>
+
+      <fieldset class="field">
+        <legend class="label">Choose your critter</legend>
+        <div class="critter-grid" id="critter-grid" role="radiogroup" aria-label="Critter"></div>
+        <p class="critter-blurb" id="critter-blurb"></p>
+      </fieldset>
+
+      <fieldset class="field">
+        <legend class="label">Stage</legend>
+        <div class="stage-row" id="stage-row" role="radiogroup" aria-label="Stage"></div>
+      </fieldset>
+
+      <button id="btn-play" class="btn btn-primary btn-xl" type="button"><svg aria-hidden="true"><use href="#i-play"/></svg><span>Let's Play</span></button>
+
+      <ul class="howto" aria-label="How to play">
+        <li><span class="howto-ico ico-jump"><svg aria-hidden="true"><use href="#i-up"/></svg></span><span><b>Jump</b> <span class="keys"><kbd>Space</kbd><kbd>↑</kbd><span class="touch-word">tap</span></span><br>Hold for a higher leap</span></li>
+        <li><span class="howto-ico ico-slide"><svg aria-hidden="true"><use href="#i-down"/></svg></span><span><b>Slide</b> <span class="keys"><kbd>↓</kbd><span class="touch-word">swipe down</span></span><br>Duck under low ceilings</span></li>
+        <li><span class="howto-ico ico-collect"><svg aria-hidden="true"><use href="#i-coin"/></svg></span><span><b>Collect</b><br>Coins, gems, stars and power-ups</span></li>
+        <li><span class="howto-ico ico-flag"><svg aria-hidden="true"><use href="#i-flag"/></svg></span><span><b>Finish</b><br>Reach the flag to clear the stage</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== Stage intro ===== -->
+  <section id="scr-intro" class="screen overlay" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+    <div class="panel intro-card">
+      <p class="kicker" id="intro-kicker">Stage 1 of 5</p>
+      <h2 class="intro-title" id="intro-title">Sunny Meadow</h2>
+      <p class="intro-blurb" id="intro-blurb"></p>
+      <ul class="goals">
+        <li><svg aria-hidden="true"><use href="#i-flag"/></svg><span id="intro-goal">Reach the flag</span></li>
+        <li><svg class="ico-star" aria-hidden="true"><use href="#i-star"/></svg><span>Bonus: find the hidden stars</span></li>
+      </ul>
+      <div class="new-mech">
+        <canvas id="intro-demo" class="demo" width="300" height="130" aria-hidden="true"></canvas>
+        <div>
+          <span class="badge">New</span>
+          <h3 id="intro-mech-title">Jump</h3>
+          <p id="intro-mech-text"></p>
+        </div>
+      </div>
+      <button id="btn-start" class="btn btn-primary btn-lg" type="button"><svg aria-hidden="true"><use href="#i-play"/></svg><span>Start</span></button>
+      <p class="hint" id="intro-hint">or press <kbd>Space</kbd></p>
+    </div>
+  </section>
+
+  <!-- ===== Pause ===== -->
+  <section id="scr-pause" class="screen overlay" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+    <div class="panel pause-card">
+      <h2 class="modal-title" id="pause-title">Paused</h2>
+      <dl class="mini-stats" id="pause-stats"></dl>
+      <div class="btn-col">
+        <button id="btn-resume" class="btn btn-primary btn-lg" type="button"><svg aria-hidden="true"><use href="#i-play"/></svg><span>Resume</span></button>
+        <button id="btn-restart" class="btn btn-secondary" type="button"><svg aria-hidden="true"><use href="#i-restart"/></svg><span>Restart stage</span></button>
+        <button id="btn-pause-menu" class="btn btn-secondary" type="button"><svg aria-hidden="true"><use href="#i-home"/></svg><span>Main menu</span></button>
+      </div>
+      <div class="toggles">
+        <button class="toggle" type="button" data-toggle="sfx" aria-pressed="true"><svg aria-hidden="true"><use href="#i-sound"/></svg><span>Sound effects</span><span class="state">On</span></button>
+        <button class="toggle" type="button" data-toggle="music" aria-pressed="true"><svg aria-hidden="true"><use href="#i-music"/></svg><span>Music</span><span class="state">On</span></button>
+        <button class="toggle" type="button" data-toggle="motion" aria-pressed="false"><svg aria-hidden="true"><use href="#i-motion"/></svg><span>Reduce motion</span><span class="state">Off</span></button>
+      </div>
+      <p class="hint">Press <kbd>Esc</kbd> to resume</p>
+    </div>
+  </section>
+
+  <!-- ===== Stage complete ===== -->
+  <section id="scr-complete" class="screen overlay" role="dialog" aria-modal="true" aria-labelledby="done-title">
+    <div class="panel result-card">
+      <div class="ribbon"><h2 id="done-title">Stage Complete!</h2></div>
+      <div class="res-cols">
+        <div class="res-col">
+          <div class="who">
+            <canvas id="done-avatar" class="avatar" width="96" height="96" aria-hidden="true"></canvas>
+            <div>
+              <p class="who-name" id="done-name">Player</p>
+              <p class="who-sub" id="done-sub">the Fox · Sunny Meadow</p>
+            </div>
+          </div>
+          <div class="rating" id="done-rating" role="img" aria-label="Rating"></div>
+          <ul class="criteria" id="done-criteria"></ul>
+          <div class="final">
+            <span class="stat-label">Final score</span>
+            <span class="final-num" id="done-score">0</span>
+            <span class="best-badge" id="done-best" hidden><svg aria-hidden="true"><use href="#i-trophy"/></svg>New personal best!</span>
+          </div>
+        </div>
+        <div class="res-col">
+          <dl class="stat-grid" id="done-stats"></dl>
+          <ul class="bonus" id="done-bonus"></ul>
+          <p class="unlock" id="done-unlock" hidden><svg aria-hidden="true"><use href="#i-unlock"/></svg><span></span></p>
+        </div>
+      </div>
+      <div class="btn-row done-btns">
+        <button id="btn-next" class="btn btn-primary btn-lg" type="button"><span>Next Stage</span><svg aria-hidden="true"><use href="#i-next"/></svg></button>
+        <button id="btn-again" class="btn btn-secondary" type="button"><svg aria-hidden="true"><use href="#i-restart"/></svg><span>Play Again</span></button>
+        <button id="btn-done-menu" class="btn btn-secondary" type="button"><svg aria-hidden="true"><use href="#i-home"/></svg><span>Main Menu</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Game over ===== -->
+  <section id="scr-over" class="screen overlay" role="dialog" aria-modal="true" aria-labelledby="over-title">
+    <div class="panel result-card over-card">
+      <div class="ribbon ribbon-soft"><h2 id="over-title">Out of hearts!</h2></div>
+      <div class="who">
+        <canvas id="over-avatar" class="avatar" width="96" height="96" aria-hidden="true"></canvas>
+        <div>
+          <p class="who-msg" id="over-msg">So close!</p>
+          <p class="who-tip" id="over-tip"></p>
+        </div>
+      </div>
+      <div class="reach">
+        <div class="reach-top"><span id="over-stage">Sunny Meadow</span><span id="over-pct">0%</span></div>
+        <div class="progress big"><div class="progress-fill" id="over-fill"></div><svg class="progress-flag" aria-hidden="true"><use href="#i-flag"/></svg></div>
+      </div>
+      <dl class="stat-grid" id="over-stats"></dl>
+      <div class="compare" id="over-compare"></div>
+      <div class="btn-row">
+        <button id="btn-retry" class="btn btn-primary btn-lg" type="button"><svg aria-hidden="true"><use href="#i-restart"/></svg><span>Try Again</span></button>
+        <button id="btn-over-menu" class="btn btn-secondary" type="button"><svg aria-hidden="true"><use href="#i-home"/></svg><span>Main Menu</span></button>
+      </div>
+    </div>
+  </section>
+
+  <canvas id="fx" class="fx-canvas" aria-hidden="true"></canvas>
+  <div id="sr" class="sr-only" aria-live="polite"></div>
+</div>
+
+<!-- ===== Phones held upright: ask to rotate ===== -->
+<section id="scr-rotate" class="rotate" role="dialog" aria-modal="true" aria-labelledby="rotate-title" aria-describedby="rotate-text" hidden>
+  <div class="rotate-inner">
+    <div class="rotate-anim" aria-hidden="true">
+      <svg class="rotate-arrow" viewBox="0 0 140 140"><path d="M28 54a46 46 0 0 1 80-14" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><path d="M110 22l-1 20-19-4" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="rotate-phone"><span class="rotate-screen"><span class="rotate-sun"></span><span class="rotate-ground"></span></span></div>
+    </div>
+    <h2 id="rotate-title">Please rotate your phone</h2>
+    <p id="rotate-text">Zoomies plays sideways, so you can see what's coming. Turn your phone and the game picks up right where you left off.</p>
+  </div>
+</section>
+
+<script src="js/util.js"></script>
+<script src="js/config.js"></script>
+<script src="js/level.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/art.js"></script>
+<script src="js/render.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/input.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

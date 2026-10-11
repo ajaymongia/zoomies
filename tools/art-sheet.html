@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Zoomies art sheet</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lilita+One&display=swap">
+<style>
+  body { margin: 0; background: #eef3ff; font: 600 14px 'Baloo 2', system-ui, sans-serif; color: #2B1D4A; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script src="../js/util.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/art.js"></script>
+<script>
+(function () {
+  const Z = window.Z, A = Z.Art, GY = Z.PHYS.GY;
+  const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  const W = innerWidth, H = innerHeight, dpr = Math.min(devicePixelRatio || 1, 2);
+  cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const page = new URLSearchParams(location.search).get('p') || 'critters';
+  function draw(t) {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = '#eef3ff'; ctx.fillRect(0, 0, W, H);
+    ctx.font = '14px "Baloo 2"'; ctx.fillStyle = '#2B1D4A';
+    if (page === 'critters') {
+      const modes = ['run', 'jump', 'fall', 'slide', 'idle', 'happy', 'hurt', 'dizzy'];
+      Z.CRITTERS.forEach((c, r) => {
+        modes.forEach((m, k) => {
+          ctx.save();
+          const S = +(new URLSearchParams(location.search).get('s') || 2.2);
+          ctx.translate(70 + k * 110 * S / 1.25, 90 * S / 1.25 + r * 110 * S / 1.25);
+          ctx.scale(S, S);
+          A.critter(ctx, c, { mode: m, phase: t * 12, t, blink: false });
+          ctx.restore();
+          if (r === 0) ctx.fillText(m, 70 + k * 150, 18);
+        });
+      });
+    } else {
+      const th = A.THEMES[page] || A.THEMES.meadow;
+      const rows = [
+        [() => A.spikes(ctx, { x: 20, y: GY - 30, w: 54, h: 30 }, th),
+         () => A.block(ctx, { x: 100, y: GY - 48, w: 48, h: 48 }, th),
+         () => A.lucky(ctx, { x: 175, y: GY - 150, w: 44, h: 44, bump: 0 }, t),
+         () => A.spring(ctx, { x: 240, y: GY - 24, w: 48, h: 24, squish: 0 }),
+         () => A.roller(ctx, { x: 340, y: GY - 24, r: 24, rot: t, tint: 1 }, th),
+         () => A.beetle(ctx, { x: 390, y: GY - 30, w: 44, h: 30, walk: t, squash: 0 }, th, t),
+         () => A.frog(ctx, { x: 460, y: GY - 34, w: 40, h: 34, air: false, squash: 0 }, t)],
+        [() => A.bird(ctx, { x: 50, y: GY - 50, w: 44, h: 30, ph: 0, squash: 0 }, t),
+         () => A.rock(ctx, { x: 130, y: GY - 26, r: 26, rot: 0 }),
+         () => A.geyser(ctx, { x: 190, w: 44, fh: 90, warn: false }, t),
+         () => A.rockWarn(ctx, { x: 290 }, t, true),
+         () => A.fireball(ctx, { x: 360, y: GY - 60, r: 16, dir: -1 }, t),
+         () => A.gate(ctx, { x: 420, y: GY - 420, w: 90, h: 380 }, th, t, GY - 170)],
+        [() => A.plat(ctx, { x: 20, y: GY - 90, w: 130, move: null }, th, t),
+         () => A.plat(ctx, { x: 170, y: GY - 90, w: 130, move: { axis: 'x' } }, th, t),
+         () => A.plat(ctx, { x: 320, y: GY - 90, w: 100, bouncy: true, squish: 0 }, th, t),
+         () => A.sign(ctx, { x: 470, kind: 'slide' }, t)],
+        [() => { A.coin(ctx, 40, GY - 60, t); A.gem(ctx, 90, GY - 60, t); A.star(ctx, 150, GY - 60, t); A.heart(ctx, 210, GY - 60, t);
+          ['shield', 'magnet', 'feather', 'boost'].forEach((k, i) => A.power(ctx, k, 280 + i * 60, GY - 60, t)); }],
+      ];
+      rows.forEach((row, r) => {
+        ctx.save(); ctx.scale(1.45, 1.45); ctx.translate(0, -GY + 150 + r * 160);
+        ctx.fillStyle = th.ground[0]; ctx.fillRect(0, GY, 560, 14);
+        row.forEach((f) => { ctx.save(); f(); ctx.restore(); });
+        ctx.restore();
+      });
+    }
+    requestAnimationFrame((ms) => draw(ms / 1000));
+  }
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame((ms) => draw(ms / 1000)));
+})();
+</script>
+</body>
+</html>
