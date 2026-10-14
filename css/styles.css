@@ -224,8 +224,16 @@ svg { width: 1em; height: 1em; flex: none; }
 .critter-blurb { margin: 2px 0 0; font-size: 0.95rem; color: var(--ink-2); min-height: 1.4em; }
 .critter-blurb b { color: var(--ink); }
 
-.stage-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-.stage-tile {
+.stage-row {
+  position: relative; display: flex; gap: 8px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity;
+  padding: 8px 4px 10px; margin: -6px -4px 0; touch-action: pan-x; scrollbar-width: thin; scrollbar-color: var(--ink-3) transparent;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 18px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 10px, #000 calc(100% - 18px), transparent 100%);
+}
+.stage-row::-webkit-scrollbar { height: 6px; }
+.stage-row::-webkit-scrollbar-thumb { background: var(--ink-3); border-radius: 9px; }
+.stage-tile { flex: 0 0 62px; scroll-snap-align: center;
+
   position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
   height: 66px; min-width: 0;
   background: linear-gradient(180deg, var(--a), var(--b));

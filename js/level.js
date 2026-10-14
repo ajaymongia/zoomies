@@ -26,6 +26,7 @@
     this.d = U.clamp(x / this.L, 0, 1);
     this.v = Z.speedAt(this.st, this.d);
     this.J = this.v * Z.JUMP_T;   // full jump distance on flat ground
+    this.vs = Math.max(1, this.v / 400); // stretches platform sizes so landing windows stay similar at speed
   };
   B.add = function (e) { this.ents.push(e); return e; };
 
@@ -154,8 +155,8 @@
 
   CH.platforms = function (b, x, o) {
     o = o || {};
-    const p1x = x + 120, p1y = GY - 105, p1w = 150;
-    const p2x = p1x + p1w + Math.round(b.lp(70, 110)), p2y = GY - 185, p2w = 140;
+    const p1x = x + 120, p1y = GY - 105, p1w = Math.round(150 * b.vs);
+    const p2x = p1x + p1w + Math.round(b.lp(70, 110) * b.vs), p2y = GY - 185, p2w = Math.round(140 * b.vs);
     b.plat(p1x, p1y, p1w);
     b.plat(p2x, p2y, p2w);
     for (let i = 0; i < 3; i++) b.coin(p1x + 35 + i * 40, p1y - 28);
@@ -201,7 +202,7 @@
     const gw = Math.round(U.clamp(b.J * (o.easy ? 1.4 : b.lp(1.45, 1.7)), 360, 640));
     const gx = x + 140;
     b.gap(gx, gx + gw);
-    const pw = Math.round(o.easy ? 190 : b.lp(180, 145));
+    const pw = Math.round((o.easy ? 190 : b.lp(180, 145)) * b.vs);
     const amp = Math.round(o.easy ? 30 : axis === 'x' ? b.lp(40, 70) : b.lp(30, 55));
     const py = axis === 'x' ? GY - 40 : GY - 75;
     const pl = b.plat(gx + gw / 2 - pw / 2, py, pw,
@@ -216,9 +217,10 @@
     let px = x + 140;
     for (let i = 0; i < n; i++) {
       const y = GY - b.ri(60, 90);
-      b.plat(px, y, 110, { bouncy: true });
-      b.coin(px + 55, y - 230);
-      px += 110 + b.ri(110, 150);
+      const bw = Math.round(110 * b.vs);
+      b.plat(px, y, bw, { bouncy: true });
+      b.coin(px + bw / 2, y - 230);
+      px += bw + Math.round(b.ri(110, 150) * b.vs);
     }
     return px + 320;
   };
@@ -255,7 +257,8 @@
     o = o || {};
     const sw = 18 * b.ri(11, 16), sx = x + 230, py = GY - Math.round(b.lp(108, 126));
     b.spikes(sx, sw);
-    b.plat(sx - 70, py, sw + 120);
+    const lead = Math.round(70 * b.vs);
+    b.plat(sx - lead, py, sw + lead + 50);
     for (let cx = sx + 10; cx < sx + sw; cx += 46) b.coin(cx, py - 28);
     if (o.star) b.star(sx + sw / 2, py - 150);
     return sx + sw + 140;
@@ -291,7 +294,7 @@
     let cx = gx, y = GY;
     for (let i = 0; i < n; i++) {
       cx += Math.round(b.J * (easy ? 0.5 : b.lp(0.55, 0.85)));
-      const w = b.ri(150, 200);
+      const w = Math.round(b.ri(150, 200) * b.vs);
       const ny = U.clamp(y + b.ri(-90, 60), GY - 190, GY - 30);
       const move = !easy && b.r() < 0.35 ? { axis: 'y', amp: 35, per: 2.6, ph: b.r() * 6.28 } : null;
       const pl = b.plat(cx, ny, w, { move });
@@ -322,7 +325,7 @@
     let cx = gx, y = GY - 40;
     for (let i = 0; i < n; i++) {
       cx += Math.round(b.J * b.lp(0.5, 0.7) * (0.9 + b.r() * 0.2));
-      const w = b.ri(120, 150);
+      const w = Math.round(b.ri(120, 150) * b.vs);
       y = U.clamp(y + b.ri(-70, 50), GY - 180, GY - 20);
       b.plat(cx, y, w, { crumble: true });
       if (mode === 'star' && i === 3) b.star(cx + w / 2, y - 190);
@@ -376,6 +379,36 @@
     b.gap(gx, gx + w);
     b.arc(gx + w / 2, FULL, 6);
     return CH.bird(b, gx + w - 120, b.r() < 0.5 ? 'mid' : 'low');
+  };
+
+  CH.spikeTriple = function (b, x) {
+    const w = 36, s1 = x + 150, sep = Math.round(b.J * b.lp(1.0, 0.86));
+    for (let i = 0; i < 3; i++) {
+      b.spikes(s1 + i * (w + sep), w);
+      b.arc(s1 + i * (w + sep) + w / 2, MID, 3);
+    }
+    return s1 + 3 * w + 2 * sep + 90;
+  };
+
+  CH.rollerPair = function (b, x) {
+    const e = CH.roller(b, x);
+    b.at(e);
+    return CH.roller(b, e - 200 + Math.round(b.v * 0.5));
+  };
+
+  CH.gateBird = function (b, x) {
+    const gx = x + 160, w = Math.round(b.lp(60, 110));
+    b.gate(gx, w);
+    for (let cx = gx - 20; cx <= gx + w + 20; cx += 30) b.coin(cx, GY - 14);
+    return CH.bird(b, gx + w + Math.round(b.v * b.lp(0.75, 0.55)) - 260, 'low');
+  };
+
+  CH.rockPair = function (b, x) {
+    const r1 = x + 280, r2 = r1 + Math.round(b.v * b.lp(0.95, 0.78));
+    b.rock(r1, Math.round(b.v * 1.32));
+    b.rock(r2, Math.round(b.v * 1.32));
+    b.coin(r1, GY - 120); b.coin(r2, GY - 120);
+    return r2 + 140;
   };
 
   /* power-ups, hearts and stars */

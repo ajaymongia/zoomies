@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoomies world tour</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lilita+One&display=swap">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; font: 700 14px 'Baloo 2', system-ui, sans-serif; }
+  canvas { display: block; width: 100%; height: 100%; }
+  .tag { position: fixed; left: 10px; top: 8px; color: #fff; background: rgba(0,0,0,.55); padding: 2px 10px; border-radius: 8px; }
+</style>
+</head>
+<body>
+<!-- Dev tool: renders any stage without the menu or saved progress.
+     ?s=stage number (1-15)  &f=position along the stage (0-1)  &c=critter index (0-5) -->
+<canvas id="c"></canvas>
+<div class="tag" id="tag"></div>
+<script src="../js/util.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/level.js"></script>
+<script src="../js/sim.js"></script>
+<script src="../js/art.js"></script>
+<script src="../js/render.js"></script>
+<script>
+(function () {
+  const Z = window.Z, P = Z.PHYS, q = new URLSearchParams(location.search);
+  const idx = Math.max(0, Math.min(Z.STAGES.length - 1, (+q.get('s') || 1) - 1));
+  const frac = +q.get('f') || 0.2, critter = Z.CRITTERS[+q.get('c') || 0];
+  const sim = new Z.Sim(idx);
+  sim.hurt = function () {};            // tour mode: nothing can hurt the critter
+  sim.fall = function () { this.respawn(); };
+  sim.p.x = P.START_X + (sim.finishX - P.START_X) * frac;
+  sim.respawn();
+  const R = new Z.Renderer(document.getElementById('c'));
+  R.setStage(idx);
+  const fit = () => R.resize(innerWidth, innerHeight);
+  fit(); addEventListener('resize', fit);
+  document.getElementById('tag').textContent = 'Stage ' + (idx + 1) + ' · ' + Z.STAGES[idx].name + ' · ' + Math.round(Z.speedAt(Z.STAGES[idx], frac) / P.M * 3.6) + ' km/h';
+  let last = 0;
+  function frame(ms) {
+    const dt = last ? Math.min(0.05, (ms - last) / 1000) : 0; last = ms;
+    for (let i = 0; i < 4; i++) { sim.step(dt / 4, { jumpPressed: false, jumpHeld: false, downPressed: false, downHeld: false }); sim.events.length = 0; }
+    R.draw(sim, dt, { critter });
+    requestAnimationFrame(frame);
+  }
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(frame));
+  window.tour = { sim, R, step(sec) { for (let t = 0; t < sec; t += 1 / 120) { sim.step(1 / 120, {}); sim.events.length = 0; } R.draw(sim, 0.016, { critter }); } };
+})();
+</script>
+</body>
+</html>

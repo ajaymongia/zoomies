@@ -1,7 +1,7 @@
 # Zoomies!
 
 A colourful endless-runner/platformer for the browser. Pick an animal, type your name, then dash, hop,
-slide and bop your way through five hand-scripted stages. Built with plain HTML5 Canvas and
+slide and bop your way through fifteen hand-scripted stages that get faster every time. Built with plain HTML5 Canvas and
 JavaScript: no frameworks, no build step, no image or audio files. All art is drawn in code and all
 sound is synthesised with Web Audio, so the game works offline once loaded.
 
@@ -19,7 +19,7 @@ back to system rounded fonts and still plays normally.
 | Action | Keyboard | Mouse | Touch |
 | --- | --- | --- | --- |
 | Jump (hold = higher) | Space, ↑ or W | Click / hold | Tap / hold anywhere, or the Jump button |
-| Double jump | Jump again in mid-air (Feather power-up, or always in Stage 5) | Click again | Tap again |
+| Double jump | Jump again in mid-air (Feather power-up, or always in stages 5, 13, 14 and 15) | Click again | Tap again |
 | Slide / fast-fall | ↓ or S (hold) | — | Swipe down, or hold the Slide button |
 | Pause / resume | Esc or P | Pause button | Pause button |
 | Mute sound effects | M | Sound button | Sound button |
@@ -33,16 +33,31 @@ screen side is under 600 CSS px (`isPhone` in `js/main.js`).
 
 ## The game
 
-| Stage | World | New idea | Length |
+| Stage | World | Focus | Speed (km/h) |
 | --- | --- | --- | --- |
-| 1 | Sunny Meadow | Jumping, hold for height | ~480 m |
-| 2 | Candy Canyon | Springs, moving and bouncy platforms, rolling gumballs | ~540 m |
-| 3 | Jungle Dash | Sliding under overhangs, beetles and frogs you can bop | ~600 m |
-| 4 | Lava Rush | Falling rocks (marked with a red !), timed geysers, fireball pits | ~640 m |
-| 5 | Sky Adventure | Sky boots (double jump), birds, and a crumbling-cloud finale | ~700 m |
+| 1 | Sunny Meadow | Jumping, hold for height, thorn rhythms | 32–36 |
+| 2 | Candy Canyon | Springs, moving and bouncy platforms, gumball pairs | 33–38 |
+| 3 | Jungle Dash | Sliding under overhangs, beetles and frogs you can bop | 36–40 |
+| 4 | Lava Rush | Falling rocks (marked with a red !), timed geysers, fireball pits | 38–42 |
+| 5 | Sky Adventure | Sky boots (double jump), birds, crumbling-cloud finale | 40–44 |
+| 6 | Frosty Peaks | Falling icicles and snowballs in pairs | 42–46 |
+| 7 | Desert Dunes | Sand spouts, cactus thorns, tumbleweeds | 44–48 |
+| 8 | Crystal Caverns | Tight tunnels, falling crystals, moths | 46–50 |
+| 9 | Autumn Woods | Packs of beetles, frogs and birds | 48–53 |
+| 10 | Sunset Beach | Springs over the sea, drifting rafts, crabs | 50–55 |
+| 11 | Neon City | Barriers, drones, barrels, steam vents | 52–57 |
+| 12 | Spooky Hollow | Crumbling bridges, pumpkins, bats, wisp pits | 54–59 |
+| 13 | Storm Front | Double jump through thunderclouds and diving birds | 56–61 |
+| 14 | Starlight Station | Meteor showers and drifting asteroids (double jump) | 58–63 |
+| 15 | Rainbow Castle | Everything at top speed, final gauntlet (double jump) | 60–65 |
 
-- **Hearts:** 3 per stage. Hazards cost a heart (with a short invulnerable blink); falling in a pit
-  costs a heart and drops you back on safe ground ahead. A heart pickup appears in stages 3–5.
+Every stage starts faster than the last and speeds up as it goes. Later stages also leave less
+breathing room between obstacles, use wider gaps and chain more combos (a ceiling followed by a
+low bird, thorns in threes, rockfalls in pairs). Stages run from about 50 seconds (Stage 1) to
+about 75 seconds (Stage 15).
+
+- **Hearts:** 3 per stage. Hazards cost a heart (with a brief invulnerable blink); falling in a pit
+  costs a heart and drops you back on safe ground ahead. Extra-heart pickups are rare (stages 5, 9, 12 and 15).
 - **Power-ups:** Shield (blocks one hit or one fall), Magnet (pulls coins), Feather (double jump),
   Turbo (speed burst; nothing can hurt you and gaps get a rainbow floor).
 - **Scoring:** 2 points per metre, coins 10, gems 100, stars 500, each obstacle passed 20, bopping a
@@ -62,7 +77,7 @@ js/util.js            maths, seeded RNG, formatting, safe storage
 js/config.js          physics tuning, critters, stage scripts, power-ups
 js/level.js           stage builder: hand-designed sections placed by a seeded script
 js/sim.js             simulation (no DOM): physics, collisions, scoring, events
-js/art.js             every drawing: critters, obstacles, pickups, five themed worlds
+js/art.js             every drawing: critters, obstacles, pickups, fifteen themed worlds
 js/render.js          camera, parallax, particles, pop-up text, screen effects
 js/audio.js           synthesised sound effects and per-stage music loops
 js/input.js           keyboard, mouse, tap, swipe and on-screen buttons
@@ -70,7 +85,8 @@ js/ui.js              DOM components: menu, HUD, intro, pause, results, game ove
 js/main.js            state machine, fixed-step loop, persistence, wiring
 tools/verify-levels.js  plays every stage with a search bot to prove it is fair
 tools/dev-server.py   no-cache static server
-tools/art-sheet.html  visual QA sheet for all critter poses and obstacle skins (?p=critters|meadow|candy|jungle|lava|sky)
+tools/art-sheet.html  visual QA sheet for critter poses and obstacle skins (?p=critters or any theme key)
+tools/world-tour.html  renders any stage without the menu or saves (?s=stage&f=0..1&c=critter)
 tools/build-artifact.py  writes dist/index.html for publishing as a claude.ai Artifact
 ```
 
@@ -104,6 +120,9 @@ losing a heart. Run it after changing physics in `config.js` or sections in `lev
   share of a full jump) and the `pool` weights in `Z.STAGES`.
 - New obstacle: add a factory and a section in `level.js`, collision in `sim.js` (`hits`), and a
   drawing in `art.js`, then add it to a stage pool and re-run the verifier.
+- New world: add a theme to `A.THEMES` in `art.js` (it picks a scene, ground, platform, block,
+  roller and gate style plus colours; anything unset falls back to `BASE`), a song in `audio.js`,
+  and a stage entry in `config.js`.
 
 ## Testing hooks
 

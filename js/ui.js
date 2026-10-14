@@ -140,7 +140,12 @@
         info.className = 'stage-info';
         row.after(info);
       }
-      info.innerHTML = '<b>' + st.name + '</b>' + (s.best[s.stage] ? ' · Best ' + U.fmtNum(s.best[s.stage]) : ' · Not played yet');
+      info.innerHTML = '<b>' + st.id + '. ' + st.name + '</b>' + (s.best[s.stage] ? ' · Best ' + U.fmtNum(s.best[s.stage]) : ' · Not played yet');
+      const on = row.querySelector('.stage-tile.is-on');
+      if (on) {
+        const target = on.offsetLeft - (row.clientWidth - on.offsetWidth) / 2;
+        row.scrollLeft = Math.max(0, target);
+      }
     },
 
     tick(t, critterIdx) {

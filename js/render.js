@@ -50,7 +50,8 @@
   };
 
   R.seedAmbient = function () {
-    const n = this.reduced ? 8 : 26;
+    const dense = this.theme && (this.theme.ambient === 'rain' || this.theme.ambient === 'snow');
+    const n = this.reduced ? 8 : dense ? 60 : 26;
     this.amb = [];
     for (let i = 0; i < n; i++) {
       this.amb.push({ x: Math.random() * this.viewW, y: this.top + Math.random() * (GY - this.top), s: 0.5 + Math.random(), ph: Math.random() * 6.28, c: Math.floor(Math.random() * 5) });
@@ -82,7 +83,7 @@
   /** Turns simulation events into visual feedback. */
   R.handle = function (ev, sim) {
     const p = sim.p, th = this.theme;
-    const dust = th.key === 'sky' ? '#FFFFFF' : th.key === 'candy' ? '#FFD6EC' : th.key === 'lava' ? '#8C6A8F' : '#E8D2B0';
+    const dust = th.dust;
     switch (ev.type) {
       case 'jump': this.burst(ev.x - 6, ev.y, 5, { angle: Math.PI * 0.9, spread: 1.2, speed: 120, g: -60, life: 0.35, size: 6, col: dust, kind: 'puff' }); break;
       case 'djump':
@@ -222,6 +223,11 @@
         case 'sprinkles': a.x -= drift; a.y += 40 * dt * a.s; break;
         case 'fireflies': a.x -= drift * 0.6; a.y += Math.sin(t * 0.8 + a.ph) * 14 * dt; break;
         case 'embers': a.x -= drift * 0.8 - Math.sin(t + a.ph) * 6 * dt; a.y -= 50 * dt * a.s; break;
+        case 'snow': a.x -= drift * 0.7 + (14 + Math.sin(t + a.ph) * 10) * dt; a.y += 46 * dt * a.s; break;
+        case 'leaves': a.x -= drift * 0.8 + (20 + Math.sin(t * 1.3 + a.ph) * 24) * dt; a.y += 34 * dt * a.s; break;
+        case 'rain': a.x -= drift + 90 * dt; a.y += 620 * dt * (0.8 + a.s * 0.3); break;
+        case 'dust': a.x -= drift * 1.2 + 40 * dt * a.s; a.y += Math.sin(t * 2 + a.ph) * 10 * dt; break;
+        case 'stars': a.x -= drift * 0.15; break;
         default: a.x -= drift * 0.5;
       }
       if (a.x < -10) a.x += this.viewW + 20;
@@ -243,8 +249,29 @@
           break;
         case 'fireflies': {
           const g = (Math.sin(t * 3 + a.ph) + 1) / 2;
-          ctx.fillStyle = 'rgba(255,240,140,' + (0.15 + g * 0.25) + ')'; A.circ(ctx, a.x, a.y, 7 * a.s); ctx.fill();
-          ctx.fillStyle = 'rgba(255,250,200,' + (0.4 + g * 0.6) + ')'; A.circ(ctx, a.x, a.y, 2 * a.s); ctx.fill();
+          ctx.fillStyle = 'rgba(' + th.ffCol + ',' + (0.15 + g * 0.25) + ')'; A.circ(ctx, a.x, a.y, 7 * a.s); ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,230,' + (0.4 + g * 0.6) + ')'; A.circ(ctx, a.x, a.y, 2 * a.s); ctx.fill();
+          break;
+        }
+        case 'snow':
+          ctx.fillStyle = 'rgba(255,255,255,.9)'; A.circ(ctx, a.x, a.y, 2.2 * a.s); ctx.fill();
+          break;
+        case 'leaves': {
+          const lc = ['#E0522A', '#FFB347', '#D97A2A', '#C2410C', '#FFD27A'];
+          ctx.save(); ctx.translate(a.x, a.y); ctx.rotate(t * 2 * a.s + a.ph); ctx.scale(1, Math.cos(t * 3 + a.ph));
+          A.ell(ctx, 0, 0, 5 * a.s, 2.6 * a.s); ctx.fillStyle = lc[a.c]; ctx.fill(); ctx.restore();
+          break;
+        }
+        case 'rain':
+          ctx.strokeStyle = 'rgba(190,205,255,.45)'; ctx.lineWidth = 1.4;
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(a.x - 5, a.y + 16); ctx.stroke();
+          break;
+        case 'dust':
+          ctx.fillStyle = U.rgba(th.dust, 0.55); A.circ(ctx, a.x, a.y, 1.4 * a.s); ctx.fill();
+          break;
+        case 'stars': {
+          const g = (Math.sin(t * 2 + a.ph * 3) + 1) / 2;
+          ctx.fillStyle = 'rgba(255,255,255,' + (0.25 + g * 0.75) + ')'; A.starPath(ctx, a.x, a.y, 3 * a.s * g + 1, 0.8, 4); ctx.fill();
           break;
         }
         case 'embers':
@@ -378,7 +405,7 @@
         case 'lucky': A.lucky(ctx, e, this.t); break;
         case 'plat': if (!e.gone || e.y < GY + 400) A.plat(ctx, e, th, this.t); break;
         case 'spring': A.spring(ctx, e); break;
-        case 'geyser': A.geyser(ctx, e, this.t); break;
+        case 'geyser': A.geyser(ctx, e, this.t, th); break;
         case 'rock':
           if (e.st === 0 && p.x > e.x - e.trig * 1.9 && !e.dead) A.rockWarn(ctx, e, this.t, p.x > e.x - e.trig * 1.2);
           break;
@@ -400,9 +427,9 @@
         case 'roller': A.roller(ctx, e, th); break;
         case 'beetle': A.beetle(ctx, e, th, this.t); break;
         case 'frog': A.frog(ctx, e, this.t); break;
-        case 'bird': A.bird(ctx, e, this.t); break;
-        case 'rock': if (e.st > 0) A.rock(ctx, e); break;
-        case 'fireball': A.fireball(ctx, e, this.t); break;
+        case 'bird': A.bird(ctx, e, this.t, th); break;
+        case 'rock': if (e.st > 0) A.rock(ctx, e, th); break;
+        case 'fireball': A.fireball(ctx, e, this.t, th); break;
       }
     }
     if (o.critter) this.drawPlayer(ctx, sim, o.critter);
@@ -422,6 +449,10 @@
         const x = (U.hash(i * 3.1 + Math.floor(this.t * 12)) * this.w);
         ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 80, y); ctx.stroke();
       }
+    }
+    if (th.lightning && !this.reduced) {
+      const ph = this.t % 2.7;
+      if (ph < 0.14) { ctx.fillStyle = 'rgba(235,240,255,' + 0.22 * (1 - ph / 0.14) + ')'; ctx.fillRect(0, 0, this.w, this.h); }
     }
     if (this.hurtFlash > 0) {
       const a = this.hurtFlash;

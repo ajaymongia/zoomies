@@ -161,7 +161,7 @@
     if (idx + 1 < n) {
       if (save.unlocked < idx + 2) { save.unlocked = idx + 2; unlockText = 'Stage ' + (idx + 2) + ' unlocked: ' + Z.STAGES[idx + 1].name; }
       save.stage = idx + 1;
-    } else unlockText = 'All five worlds cleared. You are a Zoomies legend!';
+    } else unlockText = 'All ' + n + ' worlds cleared. You are a Zoomies legend!';
     persist();
     G.session.best = Math.max(G.session.best, r.final);
     G.session.runs++;
